@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.Playables;
 using UnityEngine.UI;
 using TMPro;
 
 public class Typer : MonoBehaviour
 {
-     public TextMeshProUGUI wordOutput;
+    public GameObject enemy;              // referensi ke prefab atau musuh yang aktif
+    public WordBank wordBank;
+    public TextMeshProUGUI wordOutput;
 
-    private string remaingWord = string.Empty;
-    private string currentWord = "kontol";
+    private string remainingWord = string.Empty;
+    private string currentWord = string.Empty;
+
     void Start()
     {
         SetCurrentWord();
     }
 
-    // Update is called once per frame
     void Update()
     {
         CheckInput();
@@ -24,13 +25,14 @@ public class Typer : MonoBehaviour
 
     private void SetCurrentWord()
     {
+        currentWord = wordBank.GetWord();
         SetRemainingWord(currentWord);
     }
 
     private void SetRemainingWord(string newString)
     {
-        remaingWord = newString;
-        wordOutput.text = remaingWord;
+        remainingWord = newString;
+        wordOutput.text = remainingWord;
     }
 
     private void CheckInput()
@@ -47,33 +49,38 @@ public class Typer : MonoBehaviour
 
     private void EnterLetter(string typedLetter)
     {
-            if (IsCorrectLetter(typedLetter))
-            {
+        if (IsCorrectLetter(typedLetter))
+        {
             RemoveLetter();
-              if (IsWordComplete())
-              {
-                  SetCurrentWord();
-              }
-              
+
+            if (IsWordComplete())
+            {
+                // 🔥 Jika kata selesai, hancurkan musuh
+                if (enemy != null)
+                {
+                    Destroy(enemy);
+                    Debug.Log("Enemy destroyed!");
+                }
+
+                // 🔁 Ganti ke kata baru
+                SetCurrentWord();
             }
+        }
     }
 
     private bool IsCorrectLetter(string letter)
     {
-
-        return remaingWord.IndexOf(letter) == 0;
+        return remainingWord.IndexOf(letter) == 0;
     }
 
     private bool IsWordComplete()
     {
-        return remaingWord.Length == 0;
+        return remainingWord.Length == 0;
     }
 
     private void RemoveLetter()
     {
-        remaingWord = remaingWord.Remove(0, 1);
-        wordOutput.text = remaingWord;
+        remainingWord = remainingWord.Remove(0, 1);
+        wordOutput.text = remainingWord;
     }
-    
-
 }
