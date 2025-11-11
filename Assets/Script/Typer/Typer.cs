@@ -6,40 +6,47 @@ using TMPro;
 
 public class Typer : MonoBehaviour
 {
-    public GameObject enemy;              // referensi ke prefab atau musuh yang aktif
-    public WordBank wordBank;
-    public TextMeshProUGUI wordOutput;
+    // Referensi ke Spawner, bukan 1 musuh
+    public SpawnerController spawnerController; 
+    public TextMeshProUGUI wordOutput; // Ini UI utama di bawah layar
 
+    // Dihapus: public GameObject enemy;
+    // Dihapus: public WordBank wordBank;
+    
+    private Enemy targetEnemy; // Musuh yang sedang diketik
     private string remainingWord = string.Empty;
     private string currentWord = string.Empty;
 
     void Start()
     {
-        SetCurrentWord();
+        targetEnemy = null;
+        wordOutput.text = ""; // Kosongkan UI
     }
 
     void Update()
     {
         CheckInput();
+
+        // Jika target hancur (misal, tabrak player) saat sedang diketik, reset
+        if (targetEnemy != null && targetEnemy.gameObject == null)
+        {
+            ResetTyper();
+        }
     }
 
-    private void SetCurrentWord()
+    private void ResetTyper()
     {
-        currentWord = wordBank.GetWord();
-        SetRemainingWord(currentWord);
-    }
-
-    private void SetRemainingWord(string newString)
-    {
-        remainingWord = newString;
-        wordOutput.text = remainingWord;
+        targetEnemy = null;
+        remainingWord = string.Empty;
+        currentWord = string.Empty;
+        wordOutput.text = "";
     }
 
     private void CheckInput()
     {
         if (Input.anyKeyDown)
         {
-            string keyPressed = Input.inputString;
+            string keyPressed = Input.inputString.ToLower(); // Selalu lowercase
             if (keyPressed.Length == 1)
             {
                 EnterLetter(keyPressed);
@@ -49,27 +56,58 @@ public class Typer : MonoBehaviour
 
     private void EnterLetter(string typedLetter)
     {
-        if (IsCorrectLetter(typedLetter))
+        // KASUS 1: BELUM ADA TARGET
+        if (targetEnemy == null)
         {
-            RemoveLetter();
-
-            if (IsWordComplete())
+            if (spawnerController == null)
             {
-                // 🔥 Jika kata selesai, hancurkan musuh
-                if (enemy != null)
-                {
-                    Destroy(enemy);
-                    Debug.Log("Enemy destroyed!");
-                }
+                Debug.LogError("SpawnerController belum di-assign ke Typer!");
+                return;
+            }
 
-                // 🔁 Ganti ke kata baru
-                SetCurrentWord();
+            // Cari musuh yang katanya dimulai dengan huruf yang diketik
+            foreach (GameObject enemyObj in spawnerController.GetActiveEnemies())
+            {
+                if (enemyObj == null) continue; // Lewati jika musuh null
+
+                Enemy enemyScript = enemyObj.GetComponent<Enemy>();
+                if (enemyScript != null && enemyScript.word.StartsWith(typedLetter))
+                {
+                    // KUNCI TARGET!
+                    targetEnemy = enemyScript;
+                    currentWord = enemyScript.word;
+                    remainingWord = currentWord;
+                    
+                    // Optional: Beri efek visual pada target
+                    // targetEnemy.GetComponent<SpriteRenderer>().color = Color.yellow;
+
+                    RemoveLetter(); // Proses huruf pertama
+                    break; // Berhenti mencari setelah dapat target
+                }
+            }
+        }
+        // KASUS 2: SUDAH ADA TARGET
+        else
+        {
+            if (IsCorrectLetter(typedLetter))
+            {
+                RemoveLetter();
+
+                if (IsWordComplete())
+                {
+                    // Musuh mati!
+                    targetEnemy.Die();
+                    
+                    // Reset typer untuk siap cari target baru
+                    ResetTyper();
+                }
             }
         }
     }
 
     private bool IsCorrectLetter(string letter)
     {
+        // Cek apakah huruf tersisa dimulai dengan huruf yang diketik
         return remainingWord.IndexOf(letter) == 0;
     }
 
@@ -81,6 +119,14 @@ public class Typer : MonoBehaviour
     private void RemoveLetter()
     {
         remainingWord = remainingWord.Remove(0, 1);
+        
+        // Update UI di bawah layar
         wordOutput.text = remainingWord;
+
+        // Update juga text di atas kepala musuh
+        if (targetEnemy != null)
+        {
+            targetEnemy.UpdateWordDisplay(remainingWord);
+        }
     }
 }

@@ -1,37 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Player Status")]
-    public float speed;
+    [Header("Player Settings")]
+    public float speed = 5f;
 
-    public int health;
+    [Header("Health")]
+    public int maxHealth = 5;
+    public int currentHealth;
 
     void Start()
     {
-        
+        currentHealth = maxHealth;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Contoh: gerak kanan
         transform.Translate(Vector3.right * speed * Time.deltaTime);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void TakeDamage(int amount)
     {
-        if (collision.collider.CompareTag("Enemy"))
-        {
-            health -= 1;
-            Debug.Log("Player terkena serangan musuh! Health: " + health);
-            if (health <= 0)
-            {
-                Debug.Log("Player telah mati!");
-               Time.timeScale = 0; // Hentikan permainan
-            }
-        }
+        currentHealth -= amount;
+        Debug.Log("Player terkena serangan! Health: " + currentHealth);
+
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    void Die()
+    {
+        Debug.Log("Player telah mati!");
+        Time.timeScale = 0;
     }
 }
