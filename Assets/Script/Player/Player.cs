@@ -1,21 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using System; // 1. TAMBAHKAN INI untuk Action (Event)
 
 public class Player : MonoBehaviour
 {
     [Header("Player Status")]
     public float speed;
-
     public int health;
+
+    // 2. TAMBAHKAN EVENT INI
+    // Event ini akan "berteriak" dan mengirimkan nilai health baru
+    public event Action<int> OnHealthChanged;
 
     void Start()
     {
-        
+        // Mengirimkan nilai health awal saat game dimulai
+        OnHealthChanged?.Invoke(health);
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.right * speed * Time.deltaTime);
@@ -27,10 +30,16 @@ public class Player : MonoBehaviour
         {
             health -= 1;
             Debug.Log("Player terkena serangan musuh! Health: " + health);
+
+            // 3. PICU EVENT SETELAH HEALTH BERUBAH
+            // Beri tahu GameController (dan HUDManager) bahwa health berubah
+            OnHealthChanged?.Invoke(health);
+
             if (health <= 0)
             {
                 Debug.Log("Player telah mati!");
-               Time.timeScale = 0; // Hentikan permainan
+                // Kita HAPUS 'Time.timeScale = 0' dari sini.
+                // Biarkan GameController yang mengurus Game Over.
             }
         }
     }

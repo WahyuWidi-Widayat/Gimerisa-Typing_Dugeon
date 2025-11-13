@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 6.82, y: 2.11}
-  m_SizeDelta: {x: 5.232, y: 0.872}
+  m_AnchoredPosition: {x: 6.647, y: 2.705}
+  m_SizeDelta: {x: 1.3706, y: 0.499}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5492376556175252416
 CanvasRenderer:
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.8
-  m_fontSizeBase: 0.8
+  m_fontSize: 0.2
+  m_fontSizeBase: 0.2
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0.008944854, z: -0.29035872, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -208,7 +208,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.04, y: 1.9, z: 0}
-  m_LocalScale: {x: 0.4672, y: 0.4672, z: 0.4672}
+  m_LocalScale: {x: 2.4617243, y: 2.4617243, z: 2.4617243}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2701275335951691529}
@@ -257,7 +257,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300058, guid: c3a0ffcab94f86043aa02beca70d680b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -281,7 +281,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRange: 20
-  moveSpeed: 3
+  moveSpeed: 2.5
 --- !u!70 &4388119422983845317
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

@@ -1,21 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     [Header("Parameter Deteksi")]
-    public float detectionRange = 5f; // jarak pandang musuh
-    public float moveSpeed = 2f;      // kecepatan bergerak
+    public float detectionRange = 5f;
+    public float moveSpeed = 2f;
 
-    private Transform player; // tidak perlu diisi manual
+    private Transform player;
     private bool isPlayerDetected = false;
+
+    public static event Action OnEnemyDied;
 
     void Start()
     {
-        // Cari object yang memiliki tag "Player"
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-
         if (playerObj != null)
         {
             player = playerObj.transform;
@@ -28,7 +27,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return; // kalau belum ketemu player, hentikan
+        if (player == null) return;
 
         DetectPlayer();
 
@@ -41,16 +40,7 @@ public class Enemy : MonoBehaviour
     void DetectPlayer()
     {
         float distance = Vector3.Distance(transform.position, player.position);
-
-        if (distance <= detectionRange)
-        {
-            isPlayerDetected = true;
-            Debug.Log("Player terdeteksi!");
-        }
-        else
-        {
-            isPlayerDetected = false;
-        }
+        isPlayerDetected = (distance <= detectionRange);
     }
 
     void MoveTowardPlayer()
@@ -61,11 +51,21 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log("ENEMY BERTABRAKAN DENGAN: " + collision.gameObject.name);
+
+        // Hancur hanya jika menabrak Player
         if (collision.collider.CompareTag("Player"))
         {
             Debug.Log("Enemy menabrak Player — hancur!");
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Satu musuh mati.");
+        OnEnemyDied?.Invoke();
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()
